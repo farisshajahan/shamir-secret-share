@@ -15,8 +15,7 @@ def shamirKeyShare(key, emails, k):
     a = []
     for i in range(k):
         a.append(randint(1, 2**1024))
-    a.append(key.n)
-    print(a)
+    a.append(key.d)
     for i in range(k):
         point = randint(1,2**512)
         partial_key = tuple([point, np.polyval(a,point)])
@@ -39,7 +38,11 @@ def main(args):
     fin = open(args.email_list, "r")
     emails = fin.read().splitlines()
     fin.close()
-    k = len(emails)
+    if len(emails) < 2:
+        raise Exception("Secret Sharing requires atleast two participants")
+    k = int(input('Enter minimum number of parties for decryption (leave blank to select all parties): ')) or len(emails)
+    if k > len(emails):
+        raise Exception("Minimum number of parties for decryption cannot be greater than total parties")
     key = RSA.generate(1024)
     shamirKeyShare(key, emails, k)
 
